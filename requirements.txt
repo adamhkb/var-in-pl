@@ -1,0 +1,16 @@
+beautifulsoup4
+urllib3
+pandas
+numpy
+selenium
+validators
+webdriver-manager
+ipykernel
+requests
+httpx
+nest_asyncio
+matplotlib
+seaborn
+scipy
+plotly
+nbformat
