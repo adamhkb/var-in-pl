@@ -1,16 +1,25 @@
-beautifulsoup4
-urllib3
+# Core Data Science
 pandas
 numpy
-selenium
-validators
-webdriver-manager
-ipykernel
-requests
-httpx
-nest_asyncio
+scipy
+
+# Visualization
 matplotlib
 seaborn
-scipy
 plotly
+
+# Web Scraping
+beautifulsoup4
+urllib3
+selenium
+webdriver-manager
+requests
+httpx
+
+# Jupyter
+ipykernel
 nbformat
+nest_asyncio
+
+# Web App
+streamlit
