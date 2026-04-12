@@ -1,4 +1,15 @@
+# Data files (can be regenerated)
 *.csv
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Debug/temp files
+*_debug*.html
+*_debug*.txt
+*.exe
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
