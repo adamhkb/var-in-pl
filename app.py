@@ -5,10 +5,8 @@ A Streamlit web application for analyzing VAR decisions in the Premier League.
 
 import streamlit as st
 import pandas as pd
-import numpy as np
 import plotly.express as px
-import plotly.graph_objects as go
-from scipy.stats import ttest_ind, pearsonr, spearmanr
+from scipy.stats import ttest_ind
 
 # =============================================================================
 # PAGE CONFIG
@@ -18,6 +16,76 @@ st.set_page_config(
     page_icon="⚽",
     layout="wide",
     initial_sidebar_state="expanded"
+)
+
+ESPN_SOURCES = [
+    ("2019/2020", "https://www.espn.com/soccer/story/_/id/37575919/how-var-decisions-affected-every-premier-league-club"),
+    ("2020/2021", "https://www.espn.co.uk/football/story/_/id/37587139/how-var-decisions-affected-every-premier-league-club-2020-21"),
+    ("2021/2022", "https://www.espn.co.uk/football/story/_/id/37619801/how-var-decisions-affected-every-premier-league-club-2021-22"),
+    ("2022/2023", "https://www.espn.co.uk/football/story/_/id/37631044/how-var-decisions-affected-every-premier-league-club-2022-23"),
+    ("2023/2024", "https://www.espn.com/soccer/story/_/id/38196464/how-var-decisions-affect-premier-league-club-2023-24"),
+    ("2024/2025", "https://www.espn.co.uk/football/story/_/id/40894476/how-var-decisions-affect-premier-league-club-2024-25"),
+]
+
+PLOT_LAYOUT = {
+    "paper_bgcolor": "rgba(0,0,0,0)",
+    "plot_bgcolor": "rgba(0,0,0,0)",
+    "margin": {"l": 20, "r": 20, "t": 56, "b": 20},
+}
+
+
+def apply_plot_style(fig, height):
+    fig.update_layout(height=height, **PLOT_LAYOUT)
+    return fig
+
+
+def render_plot(fig):
+    # Let Streamlit theme Plotly based on the user's selected theme.
+    st.plotly_chart(fig, width='stretch')
+
+
+def render_sources():
+    st.markdown("#### Data Sources")
+    for season, url in ESPN_SOURCES:
+        st.markdown(f"- [{season} ESPN VAR Review]({url})")
+
+
+st.markdown(
+    """
+    <style>
+    html[data-theme="light"] .stApp {
+        background: radial-gradient(circle at top left, #eef6ff 0%, #f7fafc 40%, #ffffff 100%);
+    }
+    html[data-theme="dark"] .stApp {
+        background: radial-gradient(circle at top left, #111827 0%, #0f172a 45%, #020617 100%);
+    }
+
+    html[data-theme="light"] [data-testid="stAppViewContainer"] { color: #0f172a !important; }
+    html[data-theme="dark"] [data-testid="stAppViewContainer"] { color: #e2e8f0 !important; }
+
+    [data-testid="stAppViewContainer"] .main .block-container,
+    [data-testid="stAppViewContainer"] .main .block-container p,
+    [data-testid="stAppViewContainer"] .main .block-container span,
+    [data-testid="stAppViewContainer"] .main .block-container li,
+    [data-testid="stAppViewContainer"] .main .block-container label,
+    [data-testid="stAppViewContainer"] .main .block-container h1,
+    [data-testid="stAppViewContainer"] .main .block-container h2,
+    [data-testid="stAppViewContainer"] .main .block-container h3,
+    [data-testid="stAppViewContainer"] .main .block-container h4 {
+        color: inherit !important;
+    }
+    html[data-theme="light"] div[data-testid="stMetricValue"] { color: #0a2540; font-weight: 700; }
+    html[data-theme="dark"] div[data-testid="stMetricValue"] { color: #f8fafc; font-weight: 700; }
+    html[data-theme="light"] div[data-testid="stMetricLabel"] { color: #334155 !important; }
+    html[data-theme="dark"] div[data-testid="stMetricLabel"] { color: #94a3b8 !important; }
+
+    .block-container {
+        padding-top: 1.5rem;
+        padding-bottom: 2rem;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
 )
 
 # =============================================================================
@@ -84,13 +152,16 @@ st.sidebar.markdown("---")
 st.sidebar.markdown("**Data Source**: ESPN VAR Analysis")
 st.sidebar.markdown("**Seasons**: 2019/20 - 2024/25")
 st.sidebar.markdown("**Author**: [Adam Bahrin](https://github.com/adamhkb)")
+with st.sidebar.expander("View ESPN source links", expanded=False):
+    for season, url in ESPN_SOURCES:
+        st.markdown(f"- [{season}]({url})")
 
 # =============================================================================
 # OVERVIEW PAGE
 # =============================================================================
 if page == "📊 Overview":
-    st.title("📊 Premier League VAR Analysis Dashboard")
-    st.markdown("Analyzing the impact of Video Assistant Referee (VAR) decisions across 6 seasons.")
+    st.title("⚽ Premier League VAR Analysis Dashboard")
+    st.caption("Professional analytics view of VAR outcomes across six EPL seasons.")
     
     col1, col2, col3, col4 = st.columns(4)
     
@@ -121,8 +192,8 @@ if page == "📊 Overview":
             title="Distribution of VAR Net Scores"
         )
         fig.add_vline(x=0, line_dash="dash", line_color="gray")
-        fig.update_layout(height=400)
-        st.plotly_chart(fig, width='stretch')
+        apply_plot_style(fig, 400)
+        render_plot(fig)
     
     with col2:
         st.subheader("Top 10 VAR Beneficiaries (All Time)")
@@ -135,8 +206,9 @@ if page == "📊 Overview":
             color_continuous_scale='RdYlGn',
             labels={'x': 'Total Net VAR Score', 'y': 'Team'}
         )
-        fig.update_layout(height=400, yaxis={'categoryorder': 'total ascending'}, showlegend=False)
-        st.plotly_chart(fig, width='stretch')
+        apply_plot_style(fig, 400)
+        fig.update_layout(yaxis={'categoryorder': 'total ascending'}, showlegend=False)
+        render_plot(fig)
     
     st.markdown("---")
     
@@ -151,8 +223,10 @@ if page == "📊 Overview":
         labels=dict(x="Season", y="Team", color="Net Score"),
         aspect="auto"
     )
-    fig.update_layout(height=600)
-    st.plotly_chart(fig, width='stretch')
+    apply_plot_style(fig, 600)
+    render_plot(fig)
+    with st.expander("ESPN source links used for this dashboard", expanded=False):
+        render_sources()
 
 # =============================================================================
 # TEAM ANALYSIS PAGE
@@ -193,8 +267,9 @@ elif page == "🏆 Team Analysis":
             labels={'year': 'Season', 'net_score': 'Net VAR Score'}
         )
         fig.add_hline(y=0, line_dash="dash", line_color="gray")
-        fig.update_layout(height=400, showlegend=False)
-        st.plotly_chart(fig, width='stretch')
+        apply_plot_style(fig, 400)
+        fig.update_layout(showlegend=False)
+        render_plot(fig)
     
     with col2:
         st.subheader(f"{selected_team} - Decision Breakdown")
@@ -215,8 +290,9 @@ elif page == "🏆 Team Analysis":
             color='Count',
             color_continuous_scale='Blues'
         )
-        fig.update_layout(height=400, showlegend=False)
-        st.plotly_chart(fig, width='stretch')
+        apply_plot_style(fig, 400)
+        fig.update_layout(showlegend=False)
+        render_plot(fig)
     
     st.subheader(f"{selected_team} - Season by Season Data")
     display_cols = ['year', 'net_score', 'net_goal_score', 'overturns_total', 'leading_to_goals_for', 'disallowed_goals_for', 'disallowed_goals_against']
@@ -240,8 +316,8 @@ elif page == "📈 Trends":
             markers=True,
             labels={'year': 'Season', 'overturns_total': 'Avg Overturns per Team'}
         )
-        fig.update_layout(height=400)
-        st.plotly_chart(fig, width='stretch')
+        apply_plot_style(fig, 400)
+        render_plot(fig)
     
     with col2:
         st.subheader("Big 6 vs Other Clubs - Net Score")
@@ -257,8 +333,8 @@ elif page == "📈 Trends":
             labels={'year': 'Season', 'net_score': 'Avg Net VAR Score'}
         )
         fig.add_hline(y=0, line_dash="dash", line_color="gray")
-        fig.update_layout(height=400)
-        st.plotly_chart(fig, width='stretch')
+        apply_plot_style(fig, 400)
+        render_plot(fig)
     
     st.markdown("---")
     
@@ -281,8 +357,8 @@ elif page == "📈 Trends":
         labels={'year': 'Season', 'cumulative_score': 'Cumulative Net Score', 'team_name': 'Team'}
     )
     fig.add_hline(y=0, line_dash="dash", line_color="gray")
-    fig.update_layout(height=500)
-    st.plotly_chart(fig, width='stretch')
+    apply_plot_style(fig, 500)
+    render_plot(fig)
 
 # =============================================================================
 # STATISTICAL TESTS PAGE
@@ -320,8 +396,9 @@ elif page == "🔬 Statistical Tests":
         labels={'is_big_6': 'Club Type', 'net_score': 'Net VAR Score'}
     )
     fig.update_xaxes(ticktext=['Other Clubs', 'Big 6'], tickvals=[False, True])
-    fig.update_layout(height=400, showlegend=False)
-    st.plotly_chart(fig, width='stretch')
+    apply_plot_style(fig, 400)
+    fig.update_layout(showlegend=False)
+    render_plot(fig)
     
     st.markdown("---")
     
@@ -342,8 +419,8 @@ elif page == "🔬 Statistical Tests":
         color_continuous_midpoint=0,
         labels=dict(color="Correlation")
     )
-    fig.update_layout(height=600)
-    st.plotly_chart(fig, width='stretch')
+    apply_plot_style(fig, 600)
+    render_plot(fig)
     
     st.markdown("---")
     
