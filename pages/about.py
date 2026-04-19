@@ -1,6 +1,6 @@
 import streamlit as st
 
-from data import ESPN_SOURCES
+from data import ESPN_SOURCES, NOTEBOOK_LINKS
 
 
 def render_about() -> None:
@@ -41,3 +41,11 @@ def render_about() -> None:
     for season, url in ESPN_SOURCES:
         st.markdown(f"- [{season} ESPN VAR Review]({url})")
 
+    st.subheader("Project Notebooks")
+    st.markdown(
+        """
+        These notebooks show the end-to-end work behind the dashboard (scraping, cleaning, analysis, and validation):
+        """
+    )
+    for title, url, blurb in NOTEBOOK_LINKS:
+        st.markdown(f"- [{title}]({url}): {blurb}")

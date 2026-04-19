@@ -11,6 +11,24 @@ ESPN_SOURCES = [
     ("2024/2025", "https://www.espn.co.uk/football/story/_/id/40894476/how-var-decisions-affect-premier-league-club-2024-25"),
 ]
 
+NOTEBOOK_LINKS = [
+    (
+        "Data Acquisition (Scraping + Cleaning)",
+        "https://github.com/adamhkb/var-in-pl/blob/main/VAR_Analysis_Data_Acquisition.ipynb",
+        "Selenium scraping, parsing, normalization, and CSV export.",
+    ),
+    (
+        "Team Impact Analysis",
+        "https://github.com/adamhkb/var-in-pl/blob/main/VAR_Analysis_Team_Impact.ipynb",
+        "Team-level VAR impact summaries and comparative analysis.",
+    ),
+    (
+        "League Correlation Analysis",
+        "https://github.com/adamhkb/var-in-pl/blob/main/VAR_Analysis_League_Correlation.ipynb",
+        "Correlation work exploring relationships between VAR metrics and performance.",
+    ),
+]
+
 
 @st.cache_data
 def load_data(csv_path: str = "data/var_decisions_all_seasons.csv") -> pd.DataFrame:
@@ -40,4 +58,3 @@ def load_data(csv_path: str = "data/var_decisions_all_seasons.csv") -> pd.DataFr
     df["is_big_6"] = df["team_name"].isin(big_6)
 
     return df
-

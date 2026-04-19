@@ -1,6 +1,6 @@
 import streamlit as st
 
-from data import ESPN_SOURCES, load_data
+from data import ESPN_SOURCES, NOTEBOOK_LINKS, load_data
 from pages.about import render_about
 from pages.overview import render_overview
 from pages.statistical_tests import render_statistical_tests
@@ -46,6 +46,10 @@ with st.sidebar.expander("View ESPN source links", expanded=False):
     for season, url in ESPN_SOURCES:
         st.markdown(f"- [{season}]({url})")
 
+with st.sidebar.expander("View project notebooks", expanded=False):
+    for title, url, _blurb in NOTEBOOK_LINKS:
+        st.markdown(f"- [{title}]({url})")
+
 
 if page == "📊 Overview":
     render_overview(filtered_df, selected_seasons)
@@ -68,4 +72,3 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-
