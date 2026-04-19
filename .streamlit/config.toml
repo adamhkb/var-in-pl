@@ -1,0 +1,5 @@
+[client]
+# We use a custom sidebar "Navigate" control, so hide Streamlit's auto-generated
+# multipage navigation that appears when a top-level `pages/` folder exists.
+showSidebarNavigation = false
+
