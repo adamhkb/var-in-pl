@@ -1,5 +1,7 @@
 # Data files (can be regenerated)
 *.csv
+# Keep app-critical datasets in git so Streamlit Cloud can load them.
+!data/*.csv
 
 # macOS
 .DS_Store
